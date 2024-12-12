@@ -8,7 +8,7 @@ public class Task
 
     public override string ToString()
     {
-        return $"\nId: {Id}, Name: {Name}, Status: {Status},\nDescription: {Description},\n DueDate: {DueDate}\n";
+        return $"Id: {Id}, Name: {Name}, Status: {Status},\nDescription: {Description},\nDueDate: {DueDate}\n";
     }
 }
 public enum Status

@@ -5,5 +5,19 @@
     "description": "Test dastur kamida 10 marta testda o\u0027ta olmadi bu vapshe",
     "dueDate": "2024-12-31T00:00:00",
     "status": "Done"
+  },
+  {
+    "id": 2,
+    "name": "Task1",
+    "description": "task1 ni tasnifi",
+    "dueDate": "2024-11-27T00:00:00",
+    "status": "Done"
+  },
+  {
+    "id": 3,
+    "name": "nom",
+    "description": "task nomi",
+    "dueDate": "2024-12-31T00:00:00",
+    "status": "Pending"
   }
 ]
