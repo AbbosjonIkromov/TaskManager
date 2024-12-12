@@ -20,14 +20,14 @@ string logPath = Path.Combine(basePath, "log.txt");
 
 string pattern = @"[a-zA-Z0-9\s]+";
 
-if(!File.Exists(logPath))
+if (!File.Exists(logPath))
     File.Create(logPath).Close();
 
 try
 {
-    if(!Directory.Exists(dirPath))
+    if (!Directory.Exists(dirPath))
         Directory.CreateDirectory(dirPath);
-    if(!File.Exists(jsonPath))
+    if (!File.Exists(jsonPath))
         File.Create(jsonPath).Close();
 }
 catch (Exception ex)
@@ -38,15 +38,15 @@ catch (Exception ex)
 List<Task> tasks = ReadJsonFile(jsonPath);
 
 
-while(true)
+while (true)
 {
     Console.WriteLine("\t\tTask manager\n");
-    Console.Write($"{"Vazifa qo'shish", -35} - 1\n{"Barcha vazifalarni ko'rish", - 35} - 2\n" + 
-    $"{"Kalit so'z bo'yicha qidiruv", -35} - 3\n{"Vazifalarni bajarildi deb belgilash", -35} - 4\n{"Ilovadan chiqish", -35} - 5\n" + "--> ");
+    Console.Write($"{"Vazifa qo'shish",-35} - 1\n{"Barcha vazifalarni ko'rish",-35} - 2\n" +
+    $"{"Kalit so'z bo'yicha qidiruv",-35} - 3\n{"Vazifalarni bajarildi deb belgilash",-35} - 4\n{"Ilovadan chiqish",-35} - 5\n" + "--> ");
     string input = Console.ReadLine();
     try
     {
-        switch(input)
+        switch (input)
         {
             case "1":
                 AddTask(ref tasks);
@@ -68,7 +68,7 @@ while(true)
                 break;
         }
     }
-    catch(Exception ex)
+    catch (Exception ex)
     {
         WriteLog(logPath, ex.Message);
         Console.WriteLine("\n\tXatolik yuz berdi, xatolik log.txt yozildi!");
@@ -88,17 +88,17 @@ void AddTask(ref List<Task> tasks)
         Console.Write("Task tavsifini kiriting - > ");
         description = Console.ReadLine();
 
-    }while(!IsValidDescription(description, pattern));
+    } while (!IsValidDescription(description, pattern));
     newTask.Description = description;
 
     try
     {
-        Console.WriteLine("Muddat Namuma: 2024-12-31\tYYYY-MM-DD");
+        Console.WriteLine("Muddat Namuma: \t2024-12-31 YYYY-MM-DD");
         Console.Write("Vazifani bajarish muddatini kiriting - > ");
         newTask.DueDate = DateTime.Parse(Console.ReadLine());
         Console.WriteLine("\n\tTak muvaffaqiyatli qo'shildi :)\n");
     }
-    catch(Exception)
+    catch (Exception)
     {
         throw;
     }
@@ -113,29 +113,46 @@ void AddTask(ref List<Task> tasks)
 
 void ShowTask(List<Task> tasks)
 {
-    if(tasks.Count > 0)
+    Console.WriteLine();
+    if (tasks.Count > 0)
     {
-        foreach(Task task in tasks)
-            Console.WriteLine(task.ToString());
+        List<Task> expiredTasks = new List<Task>();
+        foreach (Task task in tasks)
+        {
+            if (task.DueDate > DateTime.Now)
+                Console.WriteLine(task.ToString());
+            else
+                expiredTasks.Add(task);
+        }
+
+        if (expiredTasks.Count > 0)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("\tExpiredTasks\n");
+            foreach (var task in expiredTasks)
+                Console.WriteLine(task.ToString());
+            Console.ResetColor();
+        }
+
     }
     else
         Console.WriteLine("\nTasklar mavjud emas!\n");
 }
 void SearchTasksByKey(List<Task> tasks)
 {
-    Console.Write($"{"Name bilan qidiruv", -23} - 1\n{"DueDate bilan qidiruv", -23} - 2\n{"Status bilan qidiruv", -23} - 3\n{"Exit", - 23} - 4\n--> ");
+    Console.Write($"{"Name bilan qidiruv",-23} - 1\n{"DueDate bilan qidiruv",-23} - 2\n{"Status bilan qidiruv",-23} - 3\n{"Exit",-23} - 4\n--> ");
     string input = Console.ReadLine();
     Console.WriteLine();
-    
-    switch(input)
+
+    switch (input)
     {
         case "1":
             Console.Write("Name kiriting -> ");
             string taskName = Console.ReadLine();
             List<Task> tasksSeachByName = tasks.FindAll(x => x.Name == taskName);
-            if(tasksSeachByName.Count > 0)
+            if (tasksSeachByName.Count > 0)
             {
-                foreach(var task in tasksSeachByName)
+                foreach (var task in tasksSeachByName)
                     Console.WriteLine(task.ToString());
             }
             else
@@ -147,45 +164,45 @@ void SearchTasksByKey(List<Task> tasks)
                 Console.Write("DueDate kiriting - > ");
                 DateTime taskDueDate = DateTime.Parse(Console.ReadLine());
                 List<Task> tasksSeachByDueDate = tasks.FindAll(x => x.DueDate.Date == taskDueDate.Date);
-                if(tasksSeachByDueDate.Count > 0)
+                if (tasksSeachByDueDate.Count > 0)
                 {
-                    foreach(var task in tasksSeachByDueDate)
+                    foreach (var task in tasksSeachByDueDate)
                         Console.WriteLine(task.ToString());
                 }
                 else
                     Console.WriteLine("\n\tDueDate bo'yicha Task topiladi!\n");
 
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
             break;
         case "3":
-            Console.Write($"{"Pending", -10} - 1\n{"Done", -10} - 2\n--> ");
+            Console.Write($"{"Pending",-10} - 1\n{"Done",-10} - 2\n--> ");
             string status = Console.ReadLine();
 
-            switch(status)
+            switch (status)
             {
                 case "1":
-                List<Task> tasksSearchByStatusPending = tasks.FindAll(x => (int)x.Status == (int)Status.Pending);
-                if(tasksSearchByStatusPending.Count > 0)
-                {
-                    foreach(var task in tasksSearchByStatusPending)
-                        Console.WriteLine(task.ToString());
-                }
-                else
-                    Console.WriteLine("\n\tStatus.Pending bo'yicha task topilmadi!\n");
+                    List<Task> tasksSearchByStatusPending = tasks.FindAll(x => (int)x.Status == (int)Status.Pending);
+                    if (tasksSearchByStatusPending.Count > 0)
+                    {
+                        foreach (var task in tasksSearchByStatusPending)
+                            Console.WriteLine(task.ToString());
+                    }
+                    else
+                        Console.WriteLine("\n\tStatus.Pending bo'yicha task topilmadi!\n");
                     break;
                 case "2":
-                List<Task> tasksSearchByStatusDone = tasks.FindAll(x => (int)x.Status == (int)Status.Pending);
-                if(tasksSearchByStatusDone.Count > 0)
-                {
-                    foreach(var task in tasksSearchByStatusDone)
-                        Console.WriteLine(task.ToString());
-                }
-                else
-                    Console.WriteLine("\n\tStatus.Done bo'yicha task topilmadi!\n");
+                    List<Task> tasksSearchByStatusDone = tasks.FindAll(x => (int)x.Status == (int)Status.Pending);
+                    if (tasksSearchByStatusDone.Count > 0)
+                    {
+                        foreach (var task in tasksSearchByStatusDone)
+                            Console.WriteLine(task.ToString());
+                    }
+                    else
+                        Console.WriteLine("\n\tStatus.Done bo'yicha task topilmadi!\n");
                     break;
                 default:
                     break;
@@ -199,16 +216,16 @@ void SearchTasksByKey(List<Task> tasks)
 void MarkAsCompleted(ref List<Task> tasks)
 {
     ShowTask(tasks);
-    
+
     try
     {
         Console.Write("\nTask id kiriting -> ");
         int taskId = int.Parse(Console.ReadLine());
         Task taskById = tasks.Find(x => x.Id == taskId);
-        if(taskById != null)
+        if (taskById != null)
         {
             Console.WriteLine(taskById.ToString());
-            if(taskById.Status != Status.Done)
+            if (taskById.Status != Status.Done)
             {
                 taskById.Status = Status.Done;
                 WriteJsonFile(tasks, jsonPath);
@@ -220,7 +237,7 @@ void MarkAsCompleted(ref List<Task> tasks)
         else
             Console.WriteLine("\n\tId bo'yicha task topilmadi!\n");
     }
-    catch(Exception)
+    catch (Exception)
     {
         throw;
     }
@@ -230,18 +247,18 @@ void MarkAsCompleted(ref List<Task> tasks)
 int SequenceId(List<Task> tasks)
 {
     int maxId = 0;
-    if(tasks.Count > 0)
+    if (tasks.Count > 0)
         maxId = tasks.Max(x => x.Id);
 
-    return ++maxId; 
+    return ++maxId;
 }
 
 
 void WriteLog(string logPath, string log)
 {
-    using(StreamWriter streamWriter = new StreamWriter(logPath))
+    using (StreamWriter streamWriter = new StreamWriter(logPath, true))
     {
-        streamWriter.WriteLine(log);
+        streamWriter.WriteLine(log + " " + DateTime.Now);
     }
 }
 
@@ -253,7 +270,7 @@ bool IsValidDescription(string description, string pattern)
 
 void WriteJsonFile(List<Task> tasks, string jsonPath)
 {
-    using(StreamWriter streamWriter = new StreamWriter(jsonPath))
+    using (StreamWriter streamWriter = new StreamWriter(jsonPath))
     {
         string content = JsonSerializer.Serialize(tasks, jsonOptions);
         streamWriter.Write(content);
@@ -262,7 +279,7 @@ void WriteJsonFile(List<Task> tasks, string jsonPath)
 
 List<Task> ReadJsonFile(string jsonPath)
 {
-    using(StreamReader streamReader = new StreamReader(jsonPath))
+    using (StreamReader streamReader = new StreamReader(jsonPath))
     {
         return JsonSerializer.Deserialize<List<Task>>(streamReader.ReadToEnd(), jsonOptions) ?? new List<Task>();
     }
